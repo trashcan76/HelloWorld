@@ -25,12 +25,22 @@ public class Program {
         diff_match_patch dmp = new diff_match_patch();
         LinkedList<diff_match_patch.Diff> diff = dmp.diff_main(text1, text2);
         
-        ArrayList<String> output = new ArrayList<String>();
+        // construct a crude HTML report
+        String t = "<div>";
         for (Diff d : diff) {
         	System.out.println(d);
-        	output.add("<div class='" + d.operation + "'>" + d.text.replaceAll("\r\n",  "</br>") + "</div>");
+        	
+        	t += "<span class='" + d.operation + "'>" + 
+        			d.text.replaceAll("\r\n", "</span></div><div><span class='" + d.operation + "'>") +
+        			"</span>";
         }
         
+        if (!t.endsWith("</div>"))
+        	t += "</div>";
+        
+        ArrayList<String> output = new ArrayList<String>();        
+    	output.add(t);
+    	
         Path path = Paths.get("output.htm");
         Files.write(path, output, Charset.forName("UTF-8"));
     }
