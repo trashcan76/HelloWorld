@@ -1,17 +1,13 @@
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import name.fraser.neil.plaintext.diff_match_patch;
-import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 
 public class Program {
@@ -29,7 +25,7 @@ public class Program {
         
         // construct a crude HTML report
         try (PrintWriter out = new PrintWriter("output.htm")) {
-            String html = dmp.diff_prettyHtml(diff).replaceAll("¶", "");
+            String html = dmp.diff_prettyHtml(diff);
         	out.println(html);
         }
     }
