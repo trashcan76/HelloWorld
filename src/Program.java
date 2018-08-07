@@ -1,42 +1,36 @@
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import name.fraser.neil.plaintext.diff_match_patch;
-import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 
 public class Program {
 	
     public static void main(String[] args) throws IOException {  
     	// get text from base64 encoded PDFs
+    	// certutil -encode data.txt tmp.b64 && findstr /v /c:- tmp.b64 > data.b64certutil -encode data.txt tmp
     	String text1 = GetText("C:\\Users\\wzfis\\eclipse-workspace\\HelloWorld\\pdfs\\drumsinworship.txt");
         String text2 = GetText("C:\\Users\\wzfis\\eclipse-workspace\\HelloWorld\\pdfs\\drumsinworship2.txt");
                 
         // https://github.com/google/diff-match-patch/wiki/Language:-Java
-        diff_match_patch dmp = new diff_match_patch();
+        diff_match_patch dmp = new diff_match_patch();        
         LinkedList<diff_match_patch.Diff> diff = dmp.diff_main(text1, text2);
+        dmp.diff_cleanupSemantic(diff);
         
-        ArrayList<String> output = new ArrayList<String>();
-        for (Diff d : diff) {
-        	System.out.println(d);
-        	output.add("<div class='" + d.operation + "'>" + d.text.replaceAll("\r\n",  "</br>") + "</div>");
+        // construct a crude HTML report
+        try (PrintWriter out = new PrintWriter("output.htm")) {
+            String html = dmp.diff_prettyHtml(diff);
+        	out.println(html);
         }
-        
-        Path path = Paths.get("output.htm");
-        Files.write(path, output, Charset.forName("UTF-8"));
     }
 
     public static String GetText(String path) throws IOException {
-    	// certutil -encode data.txt tmp.b64 && findstr /v /c:- tmp.b64 > data.b64certutil -encode data.txt tmp
     	byte[] base64raw = Files.readAllBytes(Paths.get(path));    	
     	byte[] base64decoded = java.util.Base64.getMimeDecoder().decode(base64raw);
     	    
