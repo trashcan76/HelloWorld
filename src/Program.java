@@ -25,7 +25,7 @@ public class Program {
         
         // construct a crude HTML report
         try (PrintWriter out = new PrintWriter("output.htm")) {
-            String html = dmp.diff_prettyHtml(diff);
+            String html = dmp.diff_prettyHtml(diff).replaceAll("&para;", "");
         	out.println(html);
         }
     }
